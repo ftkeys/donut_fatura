@@ -38,6 +38,9 @@ def test(args):
     dataset = load_dataset(args.dataset_name_or_path, split=args.split)
 
     for idx, sample in tqdm(enumerate(dataset), total=len(dataset)):
+        sample["image"] = Image.open(
+            f'./dataset/fatura/test/{sample["file_name"]}'
+        ).convert("RGB")
         ground_truth = json.loads(sample["ground_truth"])
 
         if args.task_name == "docvqa":
@@ -46,7 +49,9 @@ def test(args):
                 prompt=f"<s_{args.task_name}><s_question>{ground_truth['gt_parses'][0]['question'].lower()}</s_question><s_answer>",
             )["predictions"][0]
         else:
-            output = pretrained_model.inference(image=sample["image"], prompt=f"<s_{args.task_name}>")["predictions"][0]
+            output = pretrained_model.inference(
+                image=sample["image"], prompt=f"<s_{args.task_name}>"
+            )["predictions"][0]
 
         if args.task_name == "rvlcdip":
             gt = ground_truth["gt_parse"]
