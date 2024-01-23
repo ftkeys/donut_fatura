@@ -38,9 +38,10 @@ def test(args):
     dataset = load_dataset(args.dataset_name_or_path, split=args.split)
 
     for idx, sample in tqdm(enumerate(dataset), total=len(dataset)):
-        sample["image"] = Image.open(
-            f'./dataset/fatura/test/{sample["file_name"]}'
-        ).convert("RGB")
+        if not sample["image"]:
+            sample["image"] = Image.open(
+                f'./dataset/fatura/test/{sample["file_name"]}'
+            ).convert("RGB")
         ground_truth = json.loads(sample["ground_truth"])
 
         if args.task_name == "docvqa":
